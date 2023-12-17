@@ -1,21 +1,41 @@
 // Composables
 import { createRouter, createWebHistory } from 'vue-router'
+import { authGuard } from "@/guards/authGuard.js";
 
 const routes = [
   {
     path: '/',
     component: () => import('@/layouts/default/Default.vue'),
+    beforeEnter: [authGuard],
     children: [
       {
         path: '',
         name: 'Home',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "home" */ '@/views/Home.vue'),
+        component: () => import('@/views/Home.vue'),
       },
     ],
   },
+  {
+    path: '/auth/',
+    component: () => import('@/layouts/auth/Auth.vue'),
+    children: [
+      {
+        path: 'login',
+        name: 'Login',
+        component: () => import('@/views/auth/Login.vue'),
+      },
+      {
+        path: 'register',
+        name: 'Register',
+        component: () => import('@/views/auth/Register.vue'),
+      },
+      {
+        path: 'forgot-password',
+        name: 'ForgotPassword',
+        component: () => import('@/views/auth/ForgotPassword.vue'),
+      }
+    ],
+  }
 ]
 
 const router = createRouter({
