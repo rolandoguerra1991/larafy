@@ -1,8 +1,9 @@
 <template>
-<v-navigation-drawer :model-value="appStore.sidebarOpen">
+<v-navigation-drawer :model-value="appStore.sidebarOpen" theme="dark">
     <v-sheet height="64px" class="pa-2">
         <v-img :src="VuetifyLogo"></v-img>
     </v-sheet>
+    <v-divider />
     <v-list nav>
         <v-list-item subtitle="Main Menu" />
         <v-list-item
@@ -18,7 +19,7 @@
 
 <script setup>
 import { useAppStore } from "@/store/app";
-import VuetifyLogo from "@/assets/logo-light.svg"
+import VuetifyLogo from "@/assets/logo-dark.svg"
 
 const appStore = useAppStore();
 
