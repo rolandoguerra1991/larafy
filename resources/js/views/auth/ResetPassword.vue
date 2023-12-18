@@ -1,5 +1,9 @@
 <script setup>
+import { useRoute } from "vue-router";
 import Logo from "@/assets/logo-light.svg";
+
+const { params } = useRoute();
+
 </script>
 
 <template>
@@ -10,13 +14,7 @@ import Logo from "@/assets/logo-light.svg";
                 <v-form >
                     <v-sheet class="mb-3">
                         <v-text-field
-                            label="Full name"
-                            prepend-inner-icon="mdi-account"
-                            variant="solo-filled">
-                        </v-text-field>
-                    </v-sheet>
-                    <v-sheet class="mb-3">
-                        <v-text-field
+                            :disabled="true"
                             label="Email"
                             prepend-inner-icon="mdi-email"
                             variant="solo-filled">
@@ -40,18 +38,8 @@ import Logo from "@/assets/logo-light.svg";
                     </v-sheet>
                     <v-sheet class="mb-3">
                         <v-btn type="submit" color="primary" :block="true">
-                            Register
+                            Reset password
                         </v-btn>
-                    </v-sheet>
-                    <v-sheet class="mb-3">
-                        <p class="text-center">
-                            Do you already haven a account?
-                            <router-link
-                                to="/auth/login"
-                                class="text-decoration-none">
-                                Login
-                            </router-link>
-                        </p>
                     </v-sheet>
                 </v-form>
             </v-sheet>

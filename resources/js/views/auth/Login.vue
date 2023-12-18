@@ -61,12 +61,12 @@ const onSubmitHandler = async () => {
                         </router-link>
                     </v-sheet>
                     <v-sheet class="mb-3">
-                        <v-btn type="submit" color="primary" block>
+                        <v-btn type="submit" color="primary" :block="true">
                             Sign in
                         </v-btn>
                     </v-sheet>
                     <v-sheet class="mb-3">
-                        <p>
+                        <p class="text-center">
                             Do you haven not a account? click
                             <router-link
                                 to="/auth/register"
