@@ -2,7 +2,6 @@ import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue'
 import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
-import { fileURLToPath, URL } from 'node:url'
 import fs from 'node:fs';
 
 const host = 'larafy.test';
@@ -34,15 +33,12 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            '@': fileURLToPath(new URL('./resources/js', import.meta.url))
+            '@': '/resources/js'
         },
         extensions: [
             '.js',
             '.json',
-            '.jsx',
-            '.mjs',
             '.ts',
-            '.tsx',
             '.vue',
         ],
     },
