@@ -6,6 +6,6 @@
 </template>
 
 <script setup>
-  import DefaultView from './View.vue'
-  import Sidebar from './Sidebar.vue';
+  import DefaultView from '@/layouts/default/View.vue'
+  import Sidebar from '@/layouts/default/Sidebar.vue';
 </script>

@@ -1,12 +1,10 @@
 // Composables
 import { createRouter, createWebHistory } from 'vue-router'
-import { authGuard } from "@/guards/authGuard.js";
 
 const routes = [
   {
     path: '/',
     component: () => import('@/layouts/default/Default.vue'),
-    beforeEnter: [authGuard],
     children: [
       {
         path: '',

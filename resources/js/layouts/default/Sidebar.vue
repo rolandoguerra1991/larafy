@@ -17,8 +17,8 @@
 </template>
 
 <script setup>
-import { useAppStore } from "../../store/app";
-import VuetifyLogo from "../../assets/logo-light.svg"
+import { useAppStore } from "@/store/app";
+import VuetifyLogo from "@/assets/logo-light.svg"
 
 const appStore = useAppStore();
 

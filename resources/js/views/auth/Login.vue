@@ -1,10 +1,7 @@
 <script setup>
-import Logo from "../../assets/logo-light.svg";
-import Bg from "../../assets/login-bg.jpg";
+import Logo from "@/assets/logo-light.svg";
+import Bg from "@/assets/login-bg.jpg";
 import {onMounted, ref} from "vue";
-import { useAppStore } from "@/store/app.js";
-
-const appStore = useAppStore();
 
 onMounted(async () => {
     await axios.get('/sanctum/csrf-cookie');
@@ -16,22 +13,13 @@ const form = ref({
     password: '',
 })
 
-const errors = ref({
-    email: null,
-    password: null,
-});
 
 const onSubmitHandler = async () => {
     await axios.post('/api/auth/login', form.value)
         .then(({ data }) => {
             console.log(data);
         }).catch(({ response }) => {
-            appStore.openAuthSnackBar(response.data.message, 'error');
-            if (Object.values(response.data.errors).length > 0) {
-                Object.keys(response.data.errors).forEach(key => {
-                    errors.value[key] = response.data.errors[key].at(0);
-                });
-            }
+            console.log(response);
         });
 }
 </script>
