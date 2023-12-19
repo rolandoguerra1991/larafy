@@ -1,10 +1,14 @@
 // Composables
+import { authenticated } from '@/guards/authenticated'
+import { guest } from '@/guards/guest'
+import { useAppStore } from '@/store/app'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
   {
     path: '/',
     component: () => import('@/layouts/default/Default.vue'),
+    beforeEnter: [authenticated],
     children: [
       {
         path: '',
@@ -16,6 +20,7 @@ const routes = [
   {
     path: '/auth/',
     component: () => import('@/layouts/auth/Auth.vue'),
+    beforeEnter: [guest],
     children: [
       {
         path: 'login',
@@ -33,7 +38,7 @@ const routes = [
         component: () => import('@/views/auth/ForgotPassword.vue'),
       },
       {
-        path: 'reset-password/:token',
+        path: 'reset-password/:token/:email',
         name: 'ResetPassword',
         component: () => import('@/views/auth/ResetPassword.vue'),
       }

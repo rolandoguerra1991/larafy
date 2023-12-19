@@ -1,7 +1,12 @@
 <script setup>
 import Logo from "@/assets/logo-light.svg";
 import Bg from "@/assets/login-bg.jpg";
-import {onMounted, ref} from "vue";
+import { onMounted, ref } from "vue";
+import { useAuthStore } from "@/store/auth";
+import { useRouter } from "vue-router";
+
+const authStore = useAuthStore();
+const router = useRouter();
 
 onMounted(async () => {
     await axios.get('/sanctum/csrf-cookie');
@@ -13,13 +18,19 @@ const form = ref({
     password: '',
 })
 
+const loadingForm = ref(false);
+
 
 const onSubmitHandler = async () => {
+    loadingForm.value = true;
     await axios.post('/api/auth/login', form.value)
         .then(({ data }) => {
-            console.log(data);
+            authStore.setUser(data);
+            router.push({ name: 'Home' });
         }).catch(({ response }) => {
             console.log(response);
+        }).finally(() => {
+            loadingForm.value = false;
         });
 }
 </script>
@@ -61,7 +72,12 @@ const onSubmitHandler = async () => {
                         </router-link>
                     </v-sheet>
                     <v-sheet class="mb-3">
-                        <v-btn type="submit" color="primary" :block="true">
+                        <v-btn
+                            type="submit"
+                            color="primary"
+                            :block="true"
+                            :loading="loadingForm"
+                            :disabled="loadingForm">
                             Sign in
                         </v-btn>
                     </v-sheet>

@@ -9,6 +9,6 @@ export const useAppStore = defineStore('app', () => {
 
   return {
     sidebarOpen,
-    toggleSidebar,
+    toggleSidebar
   }
 });

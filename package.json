@@ -9,6 +9,7 @@
         "@mdi/font": "7.0.96",
         "core-js": "^3.29.0",
         "pinia": "^2.0.0",
+        "pinia-plugin-persistedstate": "^3.2.1",
         "roboto-fontface": "*",
         "vue": "^3.2.0",
         "vue-router": "^4.0.0",
@@ -18,9 +19,9 @@
     "devDependencies": {
         "@vitejs/plugin-vue": "^4.0.0",
         "axios": "^1.6.1",
-        "laravel-vite-plugin": "^0.8.0",
         "eslint": "^8.37.0",
         "eslint-plugin-vue": "^9.3.0",
+        "laravel-vite-plugin": "^0.8.0",
         "sass": "^1.69.5",
         "vite": "^4.0.0",
         "vite-plugin-vuetify": "^1.0.0"

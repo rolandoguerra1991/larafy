@@ -1,8 +1,15 @@
 <script setup>
 import { useRoute } from "vue-router";
 import Logo from "@/assets/logo-light.svg";
+import { ref } from "vue";
 
 const { params } = useRoute();
+
+const form = ref({
+    password: '',
+    password_confirmation: '',
+    token: params.token,
+})
 
 </script>
 
@@ -14,6 +21,7 @@ const { params } = useRoute();
                 <v-form >
                     <v-sheet class="mb-3">
                         <v-text-field
+                            :model-value="params.email"
                             :disabled="true"
                             label="Email"
                             prepend-inner-icon="mdi-email"
@@ -22,6 +30,7 @@ const { params } = useRoute();
                     </v-sheet>
                     <v-sheet class="mb-3">
                         <v-text-field
+                            v-model="form.password"
                             type="password"
                             label="Password"
                             prepend-inner-icon="mdi-lock"
@@ -30,6 +39,7 @@ const { params } = useRoute();
                     </v-sheet>
                     <v-sheet class="mb-3">
                         <v-text-field
+                            v-model="form.password_confirmation"
                             type="password"
                             label="Password confirmation"
                             prepend-inner-icon="mdi-lock"
