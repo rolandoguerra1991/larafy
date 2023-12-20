@@ -27,6 +27,9 @@ const loadingForm = ref(false);
 
 const onSubmitHandler = async () => {
     loadingForm.value = true;
+    if (Object.keys(errors.value).length > 0) {
+        errors.value = {};
+    }
     await axios.post('/api/auth/login', form.value)
         .then(({ data }) => {
             authStore.setUser(data);

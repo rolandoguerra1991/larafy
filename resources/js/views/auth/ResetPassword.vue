@@ -2,7 +2,7 @@
 import { useRoute, useRouter } from "vue-router";
 import Logo from "@/assets/logo-light.svg";
 import { ref } from "vue";
-import {useAppStore} from "@/store/app.js";
+import { useAppStore } from "@/store/app.js";
 
 const { params, query } = useRoute();
 const router = useRouter();
@@ -17,8 +17,13 @@ const form = ref({
 
 const formSubmitting = ref(false);
 
+const errors = ref({});
+
 const onSubmitResetPassword = async () => {
     formSubmitting.value = true;
+    if (Object.keys(errors.value).length > 0) {
+        errors.value = {};
+    }
     axios.post('/api/auth/reset-password', form.value)
         .then(({ data }) => {
             appStore.dispatchSnackBar({
@@ -31,6 +36,11 @@ const onSubmitResetPassword = async () => {
                 text: response.data.message,
                 color: 'danger'
             });
+            if (Object.keys(response.data.errors).length > 0) {
+                Object.keys(response.data.errors).forEach((error) => {
+                    errors.value[error] = response.data.errors[error].at(0);
+                })
+            }
         }).finally(() => {
             formSubmitting.value = false;
         });
@@ -47,6 +57,8 @@ const onSubmitResetPassword = async () => {
                     <v-sheet class="mb-3">
                         <v-text-field
                             v-model="form.password"
+                            :error="errors.password && errors.password.length > 0"
+                            :error-messages="errors.password"
                             type="password"
                             label="Password"
                             prepend-inner-icon="mdi-lock"
