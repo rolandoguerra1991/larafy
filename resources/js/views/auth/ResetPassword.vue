@@ -1,15 +1,40 @@
 <script setup>
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import Logo from "@/assets/logo-light.svg";
 import { ref } from "vue";
+import {useAppStore} from "@/store/app.js";
 
-const { params } = useRoute();
+const { params, query } = useRoute();
+const router = useRouter();
+const appStore =  useAppStore()
 
 const form = ref({
     password: '',
     password_confirmation: '',
     token: params.token,
+    email: query.email,
 })
+
+const formSubmitting = ref(false);
+
+const onSubmitResetPassword = async () => {
+    formSubmitting.value = true;
+    axios.post('/api/auth/reset-password', form.value)
+        .then(({ data }) => {
+            appStore.dispatchSnackBar({
+                text: data.status,
+                color: 'success'
+            });
+            router.push({ name: 'Home' });
+        }).catch(({ response }) => {
+            appStore.dispatchSnackBar({
+                text: response.data.message,
+                color: 'danger'
+            });
+        }).finally(() => {
+            formSubmitting.value = false;
+        });
+}
 
 </script>
 
@@ -18,16 +43,7 @@ const form = ref({
         <v-card class="w-33 d-flex align-center pa-10" elevation="5">
             <v-sheet class="w-100">
                 <v-img :src="Logo" class="mb-10"/>
-                <v-form >
-                    <v-sheet class="mb-3">
-                        <v-text-field
-                            :model-value="params.email"
-                            :disabled="true"
-                            label="Email"
-                            prepend-inner-icon="mdi-email"
-                            variant="solo-filled">
-                        </v-text-field>
-                    </v-sheet>
+                <v-form @submit.prevent="onSubmitResetPassword">
                     <v-sheet class="mb-3">
                         <v-text-field
                             v-model="form.password"
@@ -47,7 +63,12 @@ const form = ref({
                         </v-text-field>
                     </v-sheet>
                     <v-sheet class="mb-3">
-                        <v-btn type="submit" color="primary" :block="true">
+                        <v-btn
+                            type="submit"
+                            color="primary"
+                            :block="true"
+                            :disabled="formSubmitting"
+                            :loading="formSubmitting">
                             Reset password
                         </v-btn>
                     </v-sheet>

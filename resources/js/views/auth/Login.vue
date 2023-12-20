@@ -4,9 +4,11 @@ import Bg from "@/assets/login-bg.jpg";
 import { onMounted, ref } from "vue";
 import { useAuthStore } from "@/store/auth";
 import { useRouter } from "vue-router";
+import {useAppStore} from "@/store/app.js";
 
 const authStore = useAuthStore();
 const router = useRouter();
+const appStore  = useAppStore();
 
 onMounted(async () => {
     await axios.get('/sanctum/csrf-cookie');
@@ -18,6 +20,8 @@ const form = ref({
     password: '',
 })
 
+const errors = ref({});
+
 const loadingForm = ref(false);
 
 
@@ -26,9 +30,21 @@ const onSubmitHandler = async () => {
     await axios.post('/api/auth/login', form.value)
         .then(({ data }) => {
             authStore.setUser(data);
+            appStore.dispatchSnackBar({
+                text: data.status,
+                color: 'success'
+            });
             router.push({ name: 'Home' });
         }).catch(({ response }) => {
-            console.log(response);
+            appStore.dispatchSnackBar({
+                text: response.data.message,
+                color: 'danger'
+            });
+            if (Object.keys(response.data.errors).length > 0) {
+                Object.keys(response.data.errors).forEach((error) => {
+                    errors.value[error] = response.data.errors[error].at(0);
+                })
+            }
         }).finally(() => {
             loadingForm.value = false;
         });
@@ -44,6 +60,8 @@ const onSubmitHandler = async () => {
                     <v-sheet class="mb-3">
                         <v-text-field
                             v-model="form.email"
+                            :error="errors.email && errors.email.length > 0"
+                            :error-messages="errors.email"
                             label="Email"
                             prepend-inner-icon="mdi-email"
                             variant="solo-filled">
@@ -52,6 +70,8 @@ const onSubmitHandler = async () => {
                     <v-sheet class="mb-3">
                         <v-text-field
                             v-model="form.password"
+                            :error="errors.password && errors.password.length > 0"
+                            :error-messages="errors.password"
                             type="password"
                             label="Password"
                             prepend-inner-icon="mdi-lock"
