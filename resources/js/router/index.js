@@ -1,7 +1,6 @@
 // Composables
 import { authenticated } from '@/guards/authenticated'
 import { guest } from '@/guards/guest'
-import { useAppStore } from '@/store/app'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
@@ -14,6 +13,11 @@ const routes = [
         path: '',
         name: 'Home',
         component: () => import('@/views/Home.vue'),
+      },
+      {
+        path: '/profile',
+        name: 'Profile',
+        component: () => import('@/views/profile/Show.vue'),
       },
     ],
   },
@@ -43,7 +47,11 @@ const routes = [
         component: () => import('@/views/auth/ResetPassword.vue'),
       }
     ],
-  }
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: { name: 'Home' }
+  },
 ]
 
 const router = createRouter({

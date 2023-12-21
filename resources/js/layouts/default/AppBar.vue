@@ -27,11 +27,7 @@
                                 link
                                 title="My profile"
                                 prepend-icon="mdi-account-circle"
-                            />
-                            <v-list-item
-                                link
-                                title="Settings"
-                                prepend-icon="mdi-cogs"
+                                to="/profile"
                             />
                             <v-divider />
                             <v-list-item
