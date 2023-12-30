@@ -3,10 +3,12 @@ import axios from "axios";
 import { useAppStore } from "@/store/app.js";
 import { useAuthStore } from "@/store/auth";
 import { useRouter, useRoute } from "vue-router";
+import { storeToRefs } from "pinia";
 
 export const useAuth = () => {
   const appStore = useAppStore()
   const authStore = useAuthStore();
+  const { user } = storeToRefs(useAuthStore());
   const router = useRouter();
   const { params, query } = useRoute();
 
@@ -27,6 +29,13 @@ export const useAuth = () => {
     email: query.email,
   };
 
+  const initialRegisterForm = {
+    name: '',
+    email: '',
+    password: '',
+    password_confirmation: '',
+  }
+
   onMounted(async () => {
     await axios.get('/sanctum/csrf-cookie');
   });
@@ -36,6 +45,7 @@ export const useAuth = () => {
   const forgotPasswordForm = ref(initialForgotPasswordForm);
   const loginForm = ref(initialLoginForm);
   const resetPasswordForm = ref(initalResetPasswordForm);
+  const registerForm = ref(initialRegisterForm);
 
   const onSubmitLoginHandler = async () => {
     submittingForm.value = true;
@@ -107,10 +117,34 @@ export const useAuth = () => {
       });
   }
 
+  const onSubmitRegisterHandler = async () => {
+    submittingForm.value = true;
+    if (Object.keys(errors.value).length > 0) {
+      errors.value = {};
+    }
+    axios.post('/api/auth/register', registerForm.value)
+      .then(({ data }) => {
+        appStore.dispatchSnackBar({
+          text: data.message,
+          color: 'success'
+        });
+        router.push({ name: 'Home' });
+      }).catch(({ response }) => {
+        if (Object.keys(response.data.errors).length > 0) {
+          Object.keys(response.data.errors).forEach((error) => {
+            errors.value[error] = response.data.errors[error].at(0);
+          })
+        }
+      }).finally(() => {
+        submittingForm.value = false;
+      });
+  }
+
   const clearForms = () => {
     loginForm.value = initialLoginForm;
     forgotPasswordForm.value = initialForgotPasswordForm;
-    resetPasswordForm.value = initalResetPasswordForm
+    resetPasswordForm.value = initalResetPasswordForm;
+    registerForm.value = initialRegisterForm;
   }
 
   const onLogoutHandler = async () => {
@@ -133,9 +167,12 @@ export const useAuth = () => {
     forgotPasswordForm,
     loginForm,
     resetPasswordForm,
+    registerForm,
+    user,
     onSubmitLoginHandler,
     onSubmitForgotPasswordHandler,
     onSubmitResetPasswordHandler,
     onLogoutHandler,
+    onSubmitRegisterHandler,
   }
 }

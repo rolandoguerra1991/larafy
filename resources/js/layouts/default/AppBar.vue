@@ -1,7 +1,7 @@
 <script setup>
 import { useAuth } from "@/composables/auth"
 import { useAppStore } from "@/store/app";
-const { onLogoutHandler } = useAuth();
+const { onLogoutHandler, user } = useAuth();
 const appStore = useAppStore();
 </script>
 
