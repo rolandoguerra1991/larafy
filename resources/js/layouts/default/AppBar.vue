@@ -1,3 +1,8 @@
+<script setup>
+import { useAuth } from "@/composables/auth"
+const { onLogoutHandler } = useAuth();
+</script>
+
 <template>
   <v-app-bar>
     <template #prepend>
@@ -33,7 +38,7 @@
                             <v-list-item
                                 link
                                 title="Logout"
-                                @click="onLogout"
+                                @click="onLogoutHandler"
                             >
                                 <template #prepend>
                                     <v-icon color="red" icon="mdi-logout" />
@@ -47,23 +52,3 @@
     </template>
   </v-app-bar>
 </template>
-
-<script setup>
-import { useAppStore } from "@/store/app";
-import { useAuthStore } from "@/store/auth";
-import { useRouter } from "vue-router";
-
-const appStore = useAppStore();
-const authStore = useAuthStore();
-const router = useRouter();
-
-const onLogout = async () => {
-    await axios.get('/api/auth/logout')
-        .then(() => {
-            authStore.setUser(null);
-            router.push({ name: 'Login' });
-        }).catch(({ response }) => {
-            console.log(response);
-        })
-}
-</script>

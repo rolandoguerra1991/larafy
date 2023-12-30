@@ -1,57 +1,8 @@
 <script setup>
 import Logo from "@/assets/logo-light.svg";
 import Bg from "@/assets/login-bg.jpg";
-import { onMounted, ref } from "vue";
-import { useAuthStore } from "@/store/auth";
-import { useRouter } from "vue-router";
-import {useAppStore} from "@/store/app.js";
-
-const authStore = useAuthStore();
-const router = useRouter();
-const appStore  = useAppStore();
-
-onMounted(async () => {
-    await axios.get('/sanctum/csrf-cookie');
-})
-
-const form = ref({
-    remember: false,
-    email: '',
-    password: '',
-})
-
-const errors = ref({});
-
-const loadingForm = ref(false);
-
-
-const onSubmitHandler = async () => {
-    loadingForm.value = true;
-    if (Object.keys(errors.value).length > 0) {
-        errors.value = {};
-    }
-    await axios.post('/api/auth/login', form.value)
-        .then(({ data }) => {
-            authStore.setUser(data);
-            appStore.dispatchSnackBar({
-                text: data.status,
-                color: 'success'
-            });
-            router.push({ name: 'Home' });
-        }).catch(({ response }) => {
-            appStore.dispatchSnackBar({
-                text: response.data.message,
-                color: 'danger'
-            });
-            if (Object.keys(response.data.errors).length > 0) {
-                Object.keys(response.data.errors).forEach((error) => {
-                    errors.value[error] = response.data.errors[error].at(0);
-                })
-            }
-        }).finally(() => {
-            loadingForm.value = false;
-        });
-}
+import { useAuth } from "@/composables/auth"
+const { errors, loginForm, onSubmitLoginHandler, submittingForm } = useAuth();
 </script>
 
 <template>
@@ -59,10 +10,10 @@ const onSubmitHandler = async () => {
         <v-card class="w-33 d-flex align-center pa-10" elevation="5">
             <v-sheet class="w-100">
                 <v-img :src="Logo" class="mb-10"/>
-                <v-form @submit.prevent="onSubmitHandler">
+                <v-form @submit.prevent="onSubmitLoginHandler">
                     <v-sheet class="mb-3">
                         <v-text-field
-                            v-model="form.email"
+                            v-model="loginForm.email"
                             :error="errors.email && errors.email.length > 0"
                             :error-messages="errors.email"
                             label="Email"
@@ -72,7 +23,7 @@ const onSubmitHandler = async () => {
                     </v-sheet>
                     <v-sheet class="mb-3">
                         <v-text-field
-                            v-model="form.password"
+                            v-model="loginForm.password"
                             :error="errors.password && errors.password.length > 0"
                             :error-messages="errors.password"
                             type="password"
@@ -83,7 +34,7 @@ const onSubmitHandler = async () => {
                     </v-sheet>
                     <v-sheet class="mb-3 d-flex justify-space-between align-center">
                         <v-checkbox
-                            v-model="form.remember"
+                            v-model="loginForm.remember"
                             label="Remember me?"
                             color="primary"
                             hide-details
@@ -99,8 +50,8 @@ const onSubmitHandler = async () => {
                             type="submit"
                             color="primary"
                             :block="true"
-                            :loading="loadingForm"
-                            :disabled="loadingForm">
+                            :loading="submittingForm"
+                            :disabled="submittingForm">
                             Sign in
                         </v-btn>
                     </v-sheet>

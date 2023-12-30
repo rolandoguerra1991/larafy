@@ -1,44 +1,7 @@
 <script setup>
 import Logo from "@/assets/logo-light.svg";
-import { ref } from "vue";
-import {useAppStore} from "@/store/app.js";
-
-const appStore =  useAppStore()
-
-const form = ref({
-    email: ''
-});
-
-const submittingForm = ref(false);
-
-const errors = ref({});
-
-const onSubmit = async () => {
-    if (Object.keys(errors.value).length > 0) {
-        errors.value = {};
-    }
-
-    submittingForm.value = true;
-    await axios.post('/api/auth/forgot-password', form.value)
-        .then(({ data }) => {
-            appStore.dispatchSnackBar({
-                text: data.status,
-                color: 'success'
-            });
-        }).catch(({ response }) => {
-            appStore.dispatchSnackBar({
-                text: response.data.message,
-                color: 'danger'
-            });
-            if (Object.keys(response.data.errors).length > 0) {
-                Object.keys(response.data.errors).forEach((error) => {
-                    errors.value[error] = response.data.errors[error].at(0);
-                })
-            }
-        }).finally(() => {
-            submittingForm.value = false;
-        });
-}
+import { useAuth } from "@/composables/auth"
+const { errors, forgotPasswordForm, submittingForm, onSubmitForgotPasswordHandler } = useAuth();
 </script>
 
 <template>
@@ -46,10 +9,10 @@ const onSubmit = async () => {
         <v-card class="w-25 d-flex align-center pa-10" elevation="5">
             <v-sheet class="w-100">
                 <v-img :src="Logo" class="mb-10"/>
-                <v-form @submit.prevent="onSubmit">
+                <v-form @submit.prevent="onSubmitForgotPasswordHandler">
                     <v-sheet class="mb-3">
                         <v-text-field
-                            v-model="form.email"
+                            v-model="forgotPasswordForm.email"
                             :error="errors.email && errors.email.length > 0"
                             :error-messages="errors.email"
                             label="Email"
@@ -58,7 +21,13 @@ const onSubmit = async () => {
                         </v-text-field>
                     </v-sheet>
                     <v-sheet class="mb-3">
-                        <v-btn type="submit" color="primary" :block="true" :disabled="submittingForm" :loading="submittingForm">
+                        <v-btn
+                            type="submit"
+                            color="primary"
+                            :block="true"
+                            :disabled="submittingForm"
+                            :loading="submittingForm"
+                        >
                             Send link by Email
                         </v-btn>
                     </v-sheet>
