@@ -11,7 +11,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\PasswordReset;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Validation\Rules;
 
 class AuthController extends Controller
 {
@@ -103,28 +104,28 @@ class AuthController extends Controller
 
     public function register(Request $request): JsonResponse {
         $request->validate([
-            'name' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|min:8|confirmed',
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        try {
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => bcrypt($request->password)
-            ]);
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
 
-            Auth::login($user, true);
+        event(new Registered($user));
 
-            return response()->json([
-                'message' => 'Registration successfully'
-            ]);
-        } catch (\Exception $exception) {
-            return response()->json([
-                'message' => $exception->getMessage()
-            ]);
-        }
+        Auth::login($user);
+
+        return response()->json([
+            'message' => 'Registration successfully'
+        ]);
+    }
+
+    public function getUser(Request $request) {
+        return $request->user();
     }
 
 }

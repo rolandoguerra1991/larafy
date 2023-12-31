@@ -1,4 +1,4 @@
-import { onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import axios from "axios";
 import { useAppStore } from "@/store/app.js";
 import { useAuthStore } from "@/store/auth";
@@ -57,10 +57,12 @@ export const useAuth = () => {
         authStore.setUser(data);
         router.push({ name: 'Home' });
       }).catch(({ response }) => {
-        if (Object.keys(response.data.errors).length > 0) {
+        if (response.data.errors && Object.keys(response.data.errors).length > 0) {
           Object.keys(response.data.errors).forEach((error) => {
             errors.value[error] = response.data.errors[error].at(0);
           })
+        } else if(response.data.message) {
+          errors.value.email = response.data.message;
         }
       }).finally(() => {
         submittingForm.value = false;
@@ -80,10 +82,12 @@ export const useAuth = () => {
           color: 'success'
         });
       }).catch(({ response }) => {
-        if (Object.keys(response.data.errors).length > 0) {
+        if (response.data.errors && Object.keys(response.data.errors).length > 0) {
           Object.keys(response.data.errors).forEach((error) => {
             errors.value[error] = response.data.errors[error].at(0);
           })
+        } else if(response.data.email) {
+          errors.value.email = response.data.email;
         }
       }).finally(() => {
         submittingForm.value = false;
@@ -161,6 +165,11 @@ export const useAuth = () => {
     clearForms();
   })
 
+  const userAvatarInitials = computed(() => {
+    const spliter = user.value.name.split(' ');
+    return spliter.length > 1 ? `${spliter[0][0]}${spliter[1][0]}` : spliter[0][0];
+  });
+
   return {
     submittingForm,
     errors,
@@ -169,6 +178,7 @@ export const useAuth = () => {
     resetPasswordForm,
     registerForm,
     user,
+    userAvatarInitials,
     onSubmitLoginHandler,
     onSubmitForgotPasswordHandler,
     onSubmitResetPasswordHandler,
